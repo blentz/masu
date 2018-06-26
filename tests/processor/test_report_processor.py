@@ -29,8 +29,8 @@ from sqlalchemy.sql.expression import delete
 
 from masu.config import Config
 from masu.database import AWS_CUR_TABLE_MAP
-from masu.database.report_db_accessor import ReportDBAccessor
-from masu.database.reporting_common_db_accessor import ReportingCommonDBAccessor
+from masu.database.report import ReportDB
+from masu.database.reporting_common import ReportingCommonDB
 from masu.external import GZIP_COMPRESSED, UNCOMPRESSED
 from masu.processor.exceptions import MasuProcessingError
 from masu.processor.report_processor import ProcessedReport, ReportProcessor
@@ -61,7 +61,7 @@ class ProcessedReportTest(MasuTestCase):
 
 
 class ReportProcessorTest(MasuTestCase):
-    """Test Cases for the ReportingCommonDBAccessor object."""
+    """Test Cases for the ReportingCommonDB object."""
 
     @classmethod
     def setUpClass(cls):

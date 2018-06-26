@@ -14,20 +14,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Accessor for Provider information from koku database."""
+"""Classes to access Providers from koku database."""
+
+from masu.database.auth import AuthDB
+from masu.database.customer import CustomerDB
+from masu.database.koku import KokuDB
+from masu.database.provider_auth import ProviderAuthDB
+from masu.database.provider_billing_source import ProviderBillingSourceDB
 
 
-from masu.database.auth_db_accessor import AuthDBAccessor
-from masu.database.customer_db_accessor import CustomerDBAccessor
-from masu.database.koku_database_access import KokuDBAccess
-from masu.database.provider_auth_db_accessor import ProviderAuthDBAccessor
-from masu.database.provider_billing_source_db_accessor import ProviderBillingSourceDBAccessor
-
-
-class ProviderDBAccessor(KokuDBAccess):
+class ProviderDB(KokuDB):
     """Class to interact with the koku database for Provider Data."""
 
-    def __init__(self, provider_uuid, schema='public'):
+    def __init__(self, provider_uuid=None, schema='public'):
         """
         Establish Provider database connection.
 
@@ -48,8 +47,26 @@ class ProviderDBAccessor(KokuDBAccess):
         Returns:
             (sqlalchemy.orm.query.Query): "SELECT public.api_customer.group_ptr_id ..."
         """
-        obj = self.get_session().query(self._provider).filter_by(uuid=self._uuid)
+        if self._uuid:
+            obj = self.get_session().query(self._provider).filter_by(uuid=self._uuid)
+        else:
+            obj = self.get_session().query(self._provider).all()
         return obj
+
+    def all(self):
+        """
+        Return all providers.
+
+        Args:
+            None
+        Returns:
+            ([sqlalchemy.ext.automap.api_provider]): ["Provider1", "Provider2"]
+        """
+        providers = []
+        objs = self._get_db_obj_query()
+        for obj in objs:
+            providers.append(obj)
+        return providers
 
     def get_uuid(self):
         """
@@ -102,7 +119,7 @@ class ProviderDBAccessor(KokuDBAccess):
         """
         obj = self._get_db_obj_query().first()
         authentication_id = obj.authentication_id
-        auth_accessor = ProviderAuthDBAccessor(authentication_id)
+        auth_accessor = ProviderAuthDB(authentication_id)
         return auth_accessor.get_provider_resource_name()
 
     def get_billing_source(self):
@@ -117,7 +134,7 @@ class ProviderDBAccessor(KokuDBAccess):
         """
         obj = self._get_db_obj_query().first()
         billing_source_id = obj.billing_source_id
-        billing_accessor = ProviderBillingSourceDBAccessor(billing_source_id)
+        billing_accessor = ProviderBillingSourceDB(billing_source_id)
         return billing_accessor.get_bucket()
 
     def get_customer_uuid(self):
@@ -132,7 +149,7 @@ class ProviderDBAccessor(KokuDBAccess):
         """
         obj = self._get_db_obj_query().first()
         customer_id = obj.customer_id
-        customer_accessor = CustomerDBAccessor(customer_id)
+        customer_accessor = CustomerDB(customer_id)
         return customer_accessor.get_uuid()
 
     def get_customer_name(self):
@@ -147,9 +164,9 @@ class ProviderDBAccessor(KokuDBAccess):
         """
         obj = self._get_db_obj_query().first()
         customer_id = obj.customer_id
-        customer_accessor = CustomerDBAccessor(customer_id)
+        customer_accessor = CustomerDB(customer_id)
         group_ptr_id = customer_accessor.get_group_ptr_id()
-        auth_accessor = AuthDBAccessor(group_ptr_id)
+        auth_accessor = AuthDB(group_ptr_id)
         return auth_accessor.get_name()
 
     def get_schema(self):
@@ -163,6 +180,6 @@ class ProviderDBAccessor(KokuDBAccess):
         """
         obj = self._get_db_obj_query().first()
         customer_id = obj.customer_id
-        customer_accessor = CustomerDBAccessor(customer_id)
+        customer_accessor = CustomerDB(customer_id)
         schema_name = customer_accessor.get_schema_name()
         return schema_name

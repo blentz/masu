@@ -15,23 +15,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-"""Test the ReportingCommonDBAccessor utility object."""
+"""Test the ReportingCommonDB utility object."""
 import copy
 
 from sqlalchemy.orm.session import Session
 
 from masu.database import AWS_CUR_TABLE_MAP
-from masu.database.reporting_common_db_accessor import ReportingCommonDBAccessor
+from masu.database.reporting_common import ReportingCommonDB
 from tests import MasuTestCase
 
 
-class ReportingCommonDBAccessorTest(MasuTestCase):
-    """Test Cases for the ReportingCommonDBAccessor object."""
+class ReportingCommonDBTest(MasuTestCase):
+    """Test Cases for the ReportingCommonDB object."""
 
     @classmethod
     def setUpClass(cls):
         """Set up the test class with required objects."""
-        cls.accessor = ReportingCommonDBAccessor()
+        cls.accessor = ReportingCommonDB()
         cls.report_tables = list(AWS_CUR_TABLE_MAP.values())
 
     def test_initializer(self):

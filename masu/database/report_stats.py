@@ -18,10 +18,10 @@
 
 from datetime import datetime
 
-from masu.database.koku_database_access import KokuDBAccess
+from masu.database.koku import KokuDB
 
 
-class ReportStatsDBAccessor(KokuDBAccess):
+class ReportStatsDB(KokuDB):
     """Class to interact with the koku database for CUR processing statistics."""
 
     def __init__(self, report_name, provider_id=None, schema='public'):

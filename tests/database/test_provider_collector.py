@@ -15,27 +15,24 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-"""Test the ProviderDBAccessor utility object."""
+"""Test the ProviderDB utility object."""
 
-from masu.database.provider_collector import ProviderCollector
+from masu.database.provider import ProviderDB
 from tests import MasuTestCase
 
 
 class ProviderQueryTest(MasuTestCase):
-    """Test Cases for the ProviderDBAccessor object."""
-
-    def setUp(self):
-        pass
+    """Test Cases for the ProviderDB object."""
 
     def test_initializer(self):
         """Test Initializer"""
-        collector = ProviderCollector()
+        collector = ProviderDB()
         self.assertIsNotNone(collector._session)
 
     def test_get_uuids(self):
         """Test getting all uuids."""
-        collector = ProviderCollector()
-        providers = collector.get_providers()
+        collector = ProviderDB()
+        providers = collector.all()
         test_provider_found = False
         for provider in providers:
             if '6e212746-484a-40cd-bba0-09a19d132d64' in provider.uuid:

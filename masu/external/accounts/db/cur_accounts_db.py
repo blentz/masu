@@ -16,8 +16,7 @@
 #
 """Database source impelmentation to provide all CUR accounts for CURAccounts access."""
 
-from masu.database.provider_collector import ProviderCollector
-from masu.database.provider_db_accessor import ProviderDBAccessor
+from masu.database.provider import ProviderDB
 from masu.external.accounts.cost_usage_report_account import CostUsageReportAccount
 from masu.external.accounts.cur_accounts_interface import CURAccountsInterface
 
@@ -40,12 +39,9 @@ class CURAccountsDB(CURAccountsInterface):
             ([CostUsageReportAcount]) : A list of Cost Usage Report Account objects
 
         """
-        collector = ProviderCollector()
-        all_providers = collector.get_providers()
-
         cur_accounts = []
-        for provider in all_providers:
-            provider_accessor = ProviderDBAccessor(provider.uuid)
+        for provider in ProviderDB().all():
+            provider_accessor = ProviderDB(provider.uuid)
             auth_credential = provider_accessor.get_authentication()
             billing_source = provider_accessor.get_billing_source()
             customer_name = provider_accessor.get_customer_name()

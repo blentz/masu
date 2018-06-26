@@ -18,7 +18,7 @@
 
 import logging
 
-from masu.database.report_stats_db_accessor import ReportStatsDBAccessor
+from masu.database.report_stats import ReportStatsDB
 from masu.processor.report_processor import ReportProcessor
 
 LOG = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ def process_report_file(process_request):
     LOG.info(log_statement)
 
     file_name = process_request.report_path.split('/')[-1]
-    stats_recorder = ReportStatsDBAccessor(file_name)
+    stats_recorder = ReportStatsDB(file_name)
     cursor_position = stats_recorder.get_cursor_position()
 
     processor = ReportProcessor(schema_name=process_request.schema_name,

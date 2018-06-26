@@ -26,8 +26,8 @@ from itertools import islice
 from os import path
 
 from masu.config import Config
-from masu.database.report_db_accessor import ReportDBAccessor
-from masu.database.reporting_common_db_accessor import ReportingCommonDBAccessor
+from masu.database.report import ReportDB
+from masu.database.reporting_common import ReportingCommonDB
 from masu.external import GZIP_COMPRESSED, UNCOMPRESSED
 from masu.processor import ALLOWED_COMPRESSIONS
 from masu.processor.exceptions import MasuProcessingError
@@ -92,11 +92,11 @@ class ReportProcessor:
         self.processed_report = ProcessedReport()
 
         # Gather database accessors
-        self.report_common_db = ReportingCommonDBAccessor()
+        self.report_common_db = ReportingCommonDB()
         self.column_map = self.report_common_db.column_map
 
-        self.report_db = ReportDBAccessor(schema=self._schema_name,
-                                          column_map=self.column_map)
+        self.report_db = ReportDB(schema=self._schema_name,
+                                  column_map=self.column_map)
         self.report_schema = self.report_db.report_schema
 
         self.current_bill = self.report_db.get_current_cost_entry_bill()
@@ -183,7 +183,7 @@ class ReportProcessor:
         # on the session
         self.report_db.commit()
 
-        self.report_db.bulk_insert_rows(
+        self.report_db.bulk_insert(
             csv_file,
             self.report_schema.reporting_awscostentrylineitem.__name__,
             columns)

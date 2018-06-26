@@ -15,19 +15,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-"""Test the ReportStatsDBAccessor utility object."""
+"""Test the ReportStatsDB utility object."""
 
 from datetime import datetime
 
-from masu.database.report_stats_db_accessor import ReportStatsDBAccessor
+from masu.database.report_stats import ReportStatsDB
 from tests import MasuTestCase
 
-class ReportStatsDBAccessorTest(MasuTestCase):
-    """Test Cases for the ReportStatsDBAccessor object."""
+class ReportStatsDBTest(MasuTestCase):
+    """Test Cases for the ReportStatsDB object."""
 
     def test_initializer(self):
         """Test Initializer"""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         self.assertIsNotNone(saver._session)
 
         saver.remove()
@@ -35,7 +35,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
 
     def test_initializer_preexisting_report(self):
         """Test getting a new accessor stats on a preexisting report."""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         saver.update(cursor_position=33,
                      last_completed_datetime='1/1/2011 11:11:11',
                      last_started_datetime='2/2/22 22:22:22',
@@ -45,7 +45,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
         self.assertIsNotNone(saver._session)
 
         # Get another accessor for the same report and verify we get back the right information.
-        saver2 = ReportStatsDBAccessor('myreport')
+        saver2 = ReportStatsDB('myreport')
         last_completed = saver2.get_last_completed_datetime()
 
         self.assertEqual(last_completed.year, 2011)
@@ -62,7 +62,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
 
     def test_add_remove(self):
         """Test basic add/remove logic."""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         saver.commit()
 
         self.assertTrue(saver.does_db_entry_exist())
@@ -76,7 +76,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
 
     def test_update(self):
         """Test updating an existing row."""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         saver.commit()
 
         returned_obj = saver._get_db_obj_query()
@@ -122,7 +122,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
 
     def test_log_last_started_datetime(self):
         """Test convience function for last started processing time."""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         saver.commit()
         saver.log_last_started_datetime()
         saver.commit()
@@ -132,7 +132,7 @@ class ReportStatsDBAccessorTest(MasuTestCase):
 
     def test_log_last_completed_datetime(self):
         """Test convience function for last completed processing time."""
-        saver = ReportStatsDBAccessor('myreport')
+        saver = ReportStatsDB('myreport')
         saver.commit()
         saver.log_last_completed_datetime()
         saver.commit()

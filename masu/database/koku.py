@@ -25,7 +25,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from masu.config import Config
 
 
-class KokuDBAccess(ABC):
+class KokuDB(ABC):
     """Base Class to connect to the koku database."""
 
     def __init__(self, schema):

@@ -24,10 +24,10 @@ from datetime import datetime
 import boto3
 
 import masu.external.downloader.aws.aws_utils as utils
-from masu.database.report_stats_db_accessor import ReportStatsDBAccessor
+from masu.config import Config
+from masu.database.report_stats import ReportStatsDB
 from masu.external.downloader.downloader_interface import DownloaderInterface
 from masu.external.downloader.report_downloader_base import ReportDownloaderBase
-from masu.config import Config
 
 DATA_DIR = Config.TMP_DIR
 LOG = logging.getLogger(__name__)
@@ -192,7 +192,7 @@ class AWSReportDownloader(ReportDownloaderBase, DownloaderInterface):
         report_dictionary = {}
         for report in reports:
             s3_filename = report.split('/')[-1]
-            stats_recorder = ReportStatsDBAccessor(s3_filename)
+            stats_recorder = ReportStatsDB(s3_filename)
             stored_etag = stats_recorder.get_etag()
 
             file_name, etag = self.download_file(report, stored_etag)

@@ -18,10 +18,10 @@
 
 from collections import defaultdict
 
-from masu.database.koku_database_access import KokuDBAccess
+from masu.database.koku import KokuDB
 
 
-class ReportingCommonDBAccessor(KokuDBAccess):
+class ReportingCommonDB(KokuDB):
     """Class to interact with customer reporting tables."""
 
     # pylint: disable=too-few-public-methods

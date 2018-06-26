@@ -31,12 +31,13 @@ from dateutil.relativedelta import relativedelta
 from faker import Faker
 from moto import mock_s3
 
-from masu.database.report_stats_db_accessor import ReportStatsDBAccessor
+from masu.config import Config
+from masu.database.report_stats import ReportStatsDB
 from masu.external.downloader.aws.aws_report_downloader import AWSReportDownloader, AWSReportDownloaderError
-from masu.providers import DATA_DIR
 from tests import MasuTestCase
 from tests.external.downloader.aws import SOME_AWS_REGIONS
 
+DATA_DIR = Config.TMP_DIR
 FAKE = Faker()
 CUSTOMER_NAME = FAKE.word()
 REPORT = FAKE.word()
@@ -229,14 +230,14 @@ class AWSReportDownloaderTest(MasuTestCase):
         for cur_dict in out:
             cur_file = cur_dict['file']
             file_name = cur_file.split('/')[-1]
-            stats_recorder = ReportStatsDBAccessor(file_name)
+            stats_recorder = ReportStatsDB(file_name)
             self.assertIsNotNone(stats_recorder.get_etag())
 
             # Cleanup
             stats_recorder.remove()
             stats_recorder.commit()
 
-            stats_recorder2 = ReportStatsDBAccessor(file_name)
+            stats_recorder2 = ReportStatsDB(file_name)
             self.assertIsNone(stats_recorder2.get_etag())
 
 

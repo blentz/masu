@@ -17,10 +17,10 @@
 """Accessor for Customer information from koku database."""
 
 
-from masu.database.koku_database_access import KokuDBAccess
+from masu.database.koku import KokuDB
 
 
-class CustomerDBAccessor(KokuDBAccess):
+class CustomerDB(KokuDB):
     """Class to interact with the koku database for Provider Billing Source Data."""
 
     def __init__(self, customer_id, schema='public'):

@@ -23,7 +23,7 @@ import psycopg2
 
 from masu.config import Config
 from masu.database import AWS_CUR_TABLE_MAP
-from masu.database.koku_database_access import KokuDBAccess
+from masu.database.koku import KokuDB
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class ReportSchema:
             self.column_types = column_types
 
 
-class ReportDBAccessor(KokuDBAccess):
+class ReportDB(KokuDB):
     """Class to interact with customer reporting tables."""
 
     def __init__(self, schema, column_map):
@@ -97,7 +97,7 @@ class ReportDBAccessor(KokuDBAccess):
         return cursor
 
     # pylint: disable=too-many-arguments
-    def bulk_insert_rows(self, file_obj, table, columns, sep='\t', null=''):
+    def bulk_insert(self, file_obj, table, columns, sep='\t', null=''):
         r"""Insert many rows using Postgres copy functionality.
 
         Args:

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-"""Test the ReportDBAccessor utility object."""
+"""Test the ReportDB utility object."""
 import datetime
 from decimal import Decimal
 import types
@@ -25,8 +25,8 @@ import psycopg2
 from sqlalchemy.orm.query import Query
 
 from masu.database import AWS_CUR_TABLE_MAP
-from masu.database.report_db_accessor import ReportDBAccessor, ReportSchema
-from masu.database.reporting_common_db_accessor import ReportingCommonDBAccessor
+from masu.database.report import ReportDB, ReportSchema
+from masu.database.reporting_common import ReportingCommonDB
 from tests import MasuTestCase
 from tests.database.helpers import ReportObjectCreator
 
@@ -37,9 +37,9 @@ class ReportSchemaTest(MasuTestCase):
     @classmethod
     def setUpClass(cls):
         """Set up the test class with required objects."""
-        cls.common_accessor = ReportingCommonDBAccessor()
+        cls.common_accessor = ReportingCommonDB()
         cls.column_map = cls.common_accessor.column_map
-        cls.accessor = ReportDBAccessor(
+        cls.accessor = ReportDB(
             schema='testcustomer',
             column_map=cls.column_map
         )
@@ -90,15 +90,15 @@ class ReportSchemaTest(MasuTestCase):
             self.assertIn(table_type, python_types)
 
 
-class ReportDBAccessorTest(MasuTestCase):
-    """Test Cases for the ReportDBAccessor object."""
+class ReportDBTest(MasuTestCase):
+    """Test Cases for the ReportDB object."""
 
     @classmethod
     def setUpClass(cls):
         """Set up the test class with required objects."""
-        cls.common_accessor = ReportingCommonDBAccessor()
+        cls.common_accessor = ReportingCommonDB()
         cls.column_map = cls.common_accessor.column_map
-        cls.accessor = ReportDBAccessor(
+        cls.accessor = ReportDB(
             schema='testcustomer',
             column_map=cls.column_map
         )
@@ -208,7 +208,7 @@ class ReportDBAccessorTest(MasuTestCase):
         for column in missing_columns:
             self.assertFalse(hasattr(result, column))
 
-    def test_bulk_insert_rows(self):
+    def test_bulk_insert(self):
         """Test that the bulk insert method inserts line items."""
         # Get data commited for foreign key relationships to work
         self.accessor.commit()
@@ -231,7 +231,7 @@ class ReportDBAccessorTest(MasuTestCase):
         values = list(data_dict.values())
         file_obj = self.creator.create_csv_file_stream(values)
 
-        self.accessor.bulk_insert_rows(file_obj, table_name, columns)
+        self.accessor.bulk_insert(file_obj, table_name, columns)
 
         final_count = query.count()
         new_line_item = query.order_by(table.id.desc()).first()
