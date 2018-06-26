@@ -31,9 +31,6 @@ class FakeDownloader():
 class ReportDownloaderTest(MasuTestCase):
     """Test Cases for the ReportDownloader object."""
 
-    def setUp(self):
-        pass
-
     @patch('masu.external.downloader.aws.aws_report_downloader.AWSReportDownloader.__init__', return_value=None)
     def test_initializer(self, fake_downloader):
         """Test to initializer"""

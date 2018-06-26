@@ -35,9 +35,6 @@ class FakeDownloader():
 class OrchestratorTest(MasuTestCase):
     """Test Cases for the Orchestrator object."""
 
-    def setUp(self):
-        pass
-
     def test_initializer(self):
         """Test to init"""
         orchestrator = Orchestrator()

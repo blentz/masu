@@ -25,9 +25,6 @@ from tests import MasuTestCase
 class AccountsAccessorTest(MasuTestCase):
     """Test Cases for the AccountsAccessor object."""
 
-    def setUp(self):
-        pass
-
     def test_get_accounts(self):
         """Test to get_access_credential"""
         account_objects = AccountsAccessor().get_accounts()

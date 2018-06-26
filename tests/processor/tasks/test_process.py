@@ -28,9 +28,6 @@ from tests import MasuTestCase
 class ProcessReportFileTests(MasuTestCase):
     """Test Cases for the Orchestrator object."""
 
-    def setUp(self):
-        pass
-
     @patch('masu.processor.report_processor.ReportProcessor')
     @patch('masu.processor.report_processor.ReportProcessor.process', return_value=2)
     def test_process_file(self, fake_processor, fake_process):

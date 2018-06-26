@@ -25,9 +25,6 @@ from tests import MasuTestCase
 class CURAccountsDBTest(MasuTestCase):
     """Test Cases for the CURAccountsDB object."""
 
-    def setUp(self):
-        pass
-
     def test_get_accounts_from_source(self):
         """Test to get all accounts"""
         accounts = CURAccountsDB().get_accounts_from_source()
