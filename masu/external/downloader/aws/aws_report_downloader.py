@@ -27,8 +27,9 @@ import masu.external.downloader.aws.aws_utils as utils
 from masu.database.report_stats_db_accessor import ReportStatsDBAccessor
 from masu.external.downloader.downloader_interface import DownloaderInterface
 from masu.external.downloader.report_downloader_base import ReportDownloaderBase
-from masu.providers import DATA_DIR
+from masu.config import Config
 
+DATA_DIR = Config.TMP_DIR
 LOG = logging.getLogger(__name__)
 
 
