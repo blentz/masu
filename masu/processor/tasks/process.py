@@ -39,18 +39,18 @@ def process_report_file(process_request):
             ' schema_name: {},'
             ' report_path: {},'
             ' compression: {}')
-    log_statement = stmt.format(process_request['schema_name'],
-                                process_request['report_path'],
-                                process_request['compression'])
+    log_statement = stmt.format(schema_name,
+                                report_path,
+                                compression)
     LOG.info(log_statement)
 
     file_name = process_request['report_path'].split('/')[-1]
     stats_recorder = ReportStatsDB(file_name)
     cursor_position = stats_recorder.get_cursor_position()
 
-    processor = ReportProcessor(schema_name=process_request['schema_name'],
-                                report_path=process_request['report_path'],
-                                compression=process_request['compression'],
+    processor = ReportProcessor(schema_name=schema_name,
+                                report_path=report_path,
+                                compression=compression,
                                 cursor_pos=cursor_position)
 
     stats_recorder.log_last_started_datetime()
