@@ -16,11 +16,11 @@
 #
 """Classes to access Providers from koku database."""
 
-from masu.database.auth import AuthDB
-from masu.database.customer import CustomerDB
-from masu.database.koku import KokuDB
-from masu.database.provider_auth import ProviderAuthDB
-from masu.database.provider_billing_source import ProviderBillingSourceDB
+from .auth import AuthDB
+from .customer import CustomerDB
+from .koku import KokuDB
+from .provider_auth import ProviderAuthDB
+from .provider_billing_source import ProviderBillingSourceDB
 
 
 class ProviderDB(KokuDB):

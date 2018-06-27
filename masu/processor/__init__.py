@@ -15,10 +15,3 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 """Masu Processor."""
-import logging
-
-from masu.external import GZIP_COMPRESSED, UNCOMPRESSED
-
-LOG = logging.getLogger(__name__)
-
-ALLOWED_COMPRESSIONS = (UNCOMPRESSED, GZIP_COMPRESSED)

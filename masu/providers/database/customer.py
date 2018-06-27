@@ -17,7 +17,7 @@
 """Accessor for Customer information from koku database."""
 
 
-from masu.database.koku import KokuDB
+from .koku import KokuDB
 
 
 class CustomerDB(KokuDB):

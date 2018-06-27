@@ -66,3 +66,11 @@ class Config(object):
     REPORT_PROCESSING_BATCH_SIZE = 10000
 
     AWS_DATETIME_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+    # Provider Types
+    AMAZON_WEB_SERVICES = 'AWS'
+
+    # Compression formats
+    UNCOMPRESSED = 'RAW'
+    GZIP_COMPRESSED = 'GZIP'
+    ALLOWED_COMPRESSIONS = (UNCOMPRESSED, GZIP_COMPRESSED)

@@ -18,7 +18,7 @@
 
 from collections import defaultdict
 
-from masu.database.koku import KokuDB
+from .koku import KokuDB
 
 
 class ReportingCommonDB(KokuDB):

@@ -18,7 +18,8 @@
 
 import logging
 
-from masu.external.report_downloader import ReportDownloader, ReportDownloaderError
+from masu.downloader import ReportDownloader
+from masu.exceptions import MasuProcessingError, MasuProviderError
 
 LOG = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ def get_report_files(customer_name,
                                       report_source=report_source,
                                       provider_type=provider_type,
                                       report_name=report_name)
-    except ReportDownloaderError as err:
+    except (MasuProcessingError, MasuProviderError) as err:
         LOG.error(str(err))
         return []
 

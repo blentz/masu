@@ -18,8 +18,8 @@
 
 import logging
 
-from masu.database.report_stats import ReportStatsDB
 from masu.processor.report_processor import ReportProcessor
+from masu.providers.database.accessors import ReportStatsDB
 
 LOG = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def process_report_file(process_request):
     Task to process a Cost Usage Report.
 
     Args:
-        process_request (CURProcessRequest): Attributes for report processing.
+        process_request (dict): Attributes for report processing.
 
     Returns:
         None
@@ -39,18 +39,18 @@ def process_report_file(process_request):
             ' schema_name: {},'
             ' report_path: {},'
             ' compression: {}')
-    log_statement = stmt.format(process_request.schema_name,
-                                process_request.report_path,
-                                process_request.compression)
+    log_statement = stmt.format(process_request['schema_name'],
+                                process_request['report_path'],
+                                process_request['compression'])
     LOG.info(log_statement)
 
-    file_name = process_request.report_path.split('/')[-1]
+    file_name = process_request['report_path'].split('/')[-1]
     stats_recorder = ReportStatsDB(file_name)
     cursor_position = stats_recorder.get_cursor_position()
 
-    processor = ReportProcessor(schema_name=process_request.schema_name,
-                                report_path=process_request.report_path,
-                                compression=process_request.compression,
+    processor = ReportProcessor(schema_name=process_request['schema_name'],
+                                report_path=process_request['report_path'],
+                                compression=process_request['compression'],
                                 cursor_pos=cursor_position)
 
     stats_recorder.log_last_started_datetime()

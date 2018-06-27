@@ -14,28 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Downloader interface to be used by Masu."""
+"""Standardized namespacing entry-point for DB accessors."""
 
-from abc import ABC, abstractmethod
-
-
-# pylint: disable=too-few-public-methods
-class DownloaderInterface(ABC):
-    """Masu interface definition to download cost usage reports."""
-
-    @abstractmethod
-    def download_current_report(self):
-        """
-        Download the current cost usage report.
-
-        Implemented by a downloader class.  Must return a list of
-        full path of CUR files that are part of the cost usage report.
-
-        Args:
-            None
-
-        Returns:
-            (List) List of full local file paths to CUR files.
-
-        """
-        pass
+# pylint: disable=unused-import
+from .auth import AuthDB
+from .customer import CustomerDB
+from .koku import KokuDB
+from .provider import ProviderDB
+from .provider_auth import ProviderAuthDB
+from .provider_billing_source import ProviderBillingSourceDB
+from .report import ReportDB
+from .report_stats import ReportStatsDB
+from .reporting_common import ReportingCommonDB

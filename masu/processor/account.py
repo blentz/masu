@@ -14,32 +14,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Database source impelmentation to provide all CUR accounts for CURAccounts access."""
+"""Provider external interface for koku to consume."""
 
-from masu.database.provider import ProviderDB
-from masu.external.accounts.cost_usage_report_account import CostUsageReportAccount
-from masu.external.accounts.cur_accounts_interface import CURAccountsInterface
+
+from masu.providers.database.accessors import ProviderDB
 
 
 # pylint: disable=too-few-public-methods
-class CURAccountsDB(CURAccountsInterface):
-    """Provider interface defnition."""
+class Account():
+    """Interface for masu to use to get accounts."""
 
-    def get_accounts_from_source(self):
+    # TODO: in the future, we will abstract this a bit, so that we can support
+    # multiple types of accounts, and build-out provider-specific report
+    # downloading flows.
+    def all(self):
         """
-        Retrieve all CUR accounts from the database managed by Koku.
+        Retrieve all accounts from the database managed by Koku.
 
-        This will return a list of CostUsageReportAccount objects for the
-        CUR Orchestrator to use to download CUR reports.
+        This will return a list of dicts for the Orchestrator to use to download reports.
 
         Args:
             None
 
         Returns:
-            ([CostUsageReportAcount]) : A list of Cost Usage Report Account objects
+            ([{}]) : A list of dicts containing Account details
 
         """
-        cur_accounts = []
+        accounts = []
         for provider in ProviderDB().all():
             provider_accessor = ProviderDB(provider.uuid)
             auth_credential = provider_accessor.get_authentication()
@@ -47,10 +48,10 @@ class CURAccountsDB(CURAccountsInterface):
             customer_name = provider_accessor.get_customer_name()
             provider_type = provider_accessor.get_type()
             schema_name = provider_accessor.get_schema()
-            cur_account = CostUsageReportAccount(auth_credential,
-                                                 billing_source,
-                                                 customer_name,
-                                                 provider_type,
-                                                 schema_name)
-            cur_accounts.append(cur_account)
-        return cur_accounts
+            account = {'authentication': auth_credential,
+                       'billing_source': billing_source,
+                       'customer': customer_name,
+                       'provider': provider_type,
+                       'schema': schema_name}
+            accounts.append(account)
+        return accounts

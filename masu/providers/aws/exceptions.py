@@ -14,28 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Cost Usage Report Accounts interface to be used by Masu."""
-
-from abc import ABC, abstractmethod
+"""AWS provider exceptions."""
 
 
-# pylint: disable=too-few-public-methods
-class CURAccountsInterface(ABC):
-    """Masu interface definition to access Cost of Usage Report accounts."""
+class AWSReportDownloaderError(Exception):
+    """AWS Report Downloader error."""
 
-    @abstractmethod
-    def get_accounts_from_source(self):
-        """
-        Return a list of all CUR accounts setup in Koku.
-
-        Implemented by an account source class.  Must return a list of
-        CostUsageReportAccount objects
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        pass
+    pass

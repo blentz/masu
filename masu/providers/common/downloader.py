@@ -14,16 +14,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Report Downloader."""
+"""Common downloader interface."""
+
+from abc import ABC, abstractmethod
 from tempfile import mkdtemp
 
 
 # pylint: disable=too-few-public-methods
-class ReportDownloaderBase():
+class ReportDownloaderInterface(ABC):
     """
-    Download cost reports from a provider.
+    Download cost reports from a cloud provider.
 
-    Base object class for downloading cost reports from a cloud provider.
+    Base object class to be inherited by provider-specific classes.
     """
 
     def __init__(self, download_path=None):
@@ -37,3 +39,37 @@ class ReportDownloaderBase():
             self.download_path = download_path
         else:
             self.download_path = mkdtemp(prefix='masu')
+
+    @abstractmethod
+    def download_report(self, datetime):
+        """
+        Download cost report for a given date.
+
+        Implemented by a downloader class.  Must return a list of
+        file paths that are part of the cost report.
+
+        Args:
+            None
+
+        Returns:
+            (List) List of local file paths to report files.
+
+        """
+        pass
+
+    @abstractmethod
+    def download_current_report(self):
+        """
+        Download the current cost report.
+
+        Implemented by a downloader class.  Must return a list of
+        file paths that are part of the cost report.
+
+        Args:
+            None
+
+        Returns:
+            (List) List of local file paths to report files.
+
+        """
+        pass

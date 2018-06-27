@@ -20,8 +20,7 @@ import logging
 
 import masu.processor.tasks.download as download_task
 import masu.processor.tasks.process as process_task
-from masu.external.accounts_accessor import AccountsAccessor
-from masu.processor.cur_process_request import CURProcessRequest
+from masu.processor.account import Account
 
 LOG = logging.getLogger(__name__)
 
@@ -29,27 +28,27 @@ LOG = logging.getLogger(__name__)
 # pylint: disable=too-few-public-methods
 class Orchestrator():
     """
-    Orchestrator for CUR processing.
+    Orchestrator for report processing.
 
     Top level object which is responsible for:
-    * Maintaining a current list of CUR accounts
-    * Ensuring that CUR reports are downloaded and processed for all accounts.
+    * Maintaining a current list of accounts
+    * Ensuring that reports are downloaded and processed for all accounts.
 
     """
 
     def __init__(self):
         """
-        Orchestrator for CUR processing.
+        Orchestrator for report processing.
 
         Args:
             None
         """
-        self._accounts = AccountsAccessor().get_accounts()
+        self._accounts = Account().all()
         self._processing_requests = []
 
-    def prepare_curs(self):
+    def prepare(self):
         """
-        Prepare a CUR processing request for each account.
+        Prepare a processing request for each account.
 
         Args:
             None
@@ -60,10 +59,10 @@ class Orchestrator():
         """
         reports = []
         for account in self._accounts:
-            credentials = account.get_access_credential()
-            source = account.get_billing_source()
-            customer_name = account.get_customer()
-            provider = account.get_provider_type()
+            credentials = account.get('authentication')
+            source = account.get('billing_source')
+            customer_name = account.get('customer')
+            provider = account.get('provider')
 
             stmt = 'Download task queued for {}'.format(customer_name)
             LOG.info(stmt)
@@ -73,18 +72,17 @@ class Orchestrator():
                                                      report_source=source,
                                                      provider_type=provider)
             for report_dict in reports:
-                cur_request = CURProcessRequest()
-                cur_request.schema_name = account.get_schema_name()
-                cur_request.report_path = report_dict.get('file')
-                cur_request.compression = report_dict.get('compression')
-
+                cur_request = {}
+                cur_request['schema_name'] = account.get('schema')
+                cur_request['report_path'] = report_dict.get('file')
+                cur_request['compression'] = report_dict.get('compression')
                 self._processing_requests.append(cur_request)
 
         return reports
 
-    def process_curs(self):
+    def process(self):
         """
-        Process downloaded cost usage reports.
+        Process downloaded reports.
 
         Args:
             None

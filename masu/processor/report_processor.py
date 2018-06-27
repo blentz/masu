@@ -26,11 +26,8 @@ from itertools import islice
 from os import path
 
 from masu.config import Config
-from masu.database.report import ReportDB
-from masu.database.reporting_common import ReportingCommonDB
-from masu.external import GZIP_COMPRESSED, UNCOMPRESSED
-from masu.processor import ALLOWED_COMPRESSIONS
-from masu.processor.exceptions import MasuProcessingError
+from masu.exceptions import MasuProcessingError
+from masu.providers.database.accessors import ReportDB, ReportingCommonDB
 
 LOG = logging.getLogger(__name__)
 
@@ -77,7 +74,7 @@ class ReportProcessor:
 
 
         """
-        if compression.upper() not in ALLOWED_COMPRESSIONS:
+        if compression.upper() not in Config.ALLOWED_COMPRESSIONS:
             err_msg = f'Compression {compression} is not supported.'
             raise MasuProcessingError(err_msg)
 
@@ -169,9 +166,9 @@ class ReportProcessor:
                 compression and the read mode for the file
 
         """
-        if compression == UNCOMPRESSED:
+        if compression == Config.UNCOMPRESSED:
             return open, 'r'
-        elif compression == GZIP_COMPRESSED:
+        elif compression == Config.GZIP_COMPRESSED:
             return gzip.open, 'rt'
 
     def _save_to_db(self):

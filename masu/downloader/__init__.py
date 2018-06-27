@@ -16,20 +16,18 @@
 #
 """Provider external interface for koku to consume."""
 
-from masu.external import AMAZON_WEB_SERVICES
-from masu.external.downloader.aws.aws_report_downloader import AWSReportDownloader
-
-
-class ReportDownloaderError(Exception):
-    """Report Downloader error."""
-
-    pass
+from masu.config import Config
+from masu.exceptions import MasuProcessingError, MasuProviderError
+from masu.providers.aws.downloader import AWSReportDownloader
 
 
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 class ReportDownloader:
-    """Interface for masu to use to get CUR accounts."""
+    """Top-level interface for masu to use for downloading reports."""
+
+    # FIXME: this class interface will change once we teach it how to properly
+    # introspect into the provider-specific Downloader objects
 
     def __init__(self, customer_name, access_credential, report_source, provider_type,
                  report_name=None):
@@ -42,10 +40,10 @@ class ReportDownloader:
         try:
             self._downloader = self._set_downloader()
         except Exception as err:
-            raise ReportDownloaderError(str(err))
+            raise MasuProcessingError(str(err))
 
         if not self._downloader:
-            raise ReportDownloaderError('Invalid provider type specified.')
+            raise MasuProviderError('Invalid provider type specified.')
 
     def _set_downloader(self):
         """
@@ -60,7 +58,7 @@ class ReportDownloader:
             (Object) : Some object that is a child of CURAccountsInterface
 
         """
-        if self.provider_type == AMAZON_WEB_SERVICES:
+        if self.provider_type == Config.AMAZON_WEB_SERVICES:
             return AWSReportDownloader(customer_name=self.customer_name,
                                        auth_credential=self.credential,
                                        cur_source=self.cur_source,

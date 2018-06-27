@@ -18,7 +18,7 @@
 
 from datetime import datetime
 
-from masu.database.koku import KokuDB
+from .koku import KokuDB
 
 
 class ReportStatsDB(KokuDB):

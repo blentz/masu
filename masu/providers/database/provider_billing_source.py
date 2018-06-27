@@ -14,42 +14,42 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Accessor for Provider Authentication from koku database."""
+"""Accessor for Provider Billing Source from koku database."""
 
 
-from masu.database.koku import KokuDB
+from .koku import KokuDB
 
 
-class ProviderAuthDB(KokuDB):
-    """Class to interact with the koku database for Provider Authentication Data."""
+class ProviderBillingSourceDB(KokuDB):
+    """Class to interact with the koku database for Provider Billing Source Data."""
 
-    def __init__(self, auth_id, schema='public'):
+    def __init__(self, billing_source_id, schema='public'):
         """
-        Establish Provider Authentication database connection.
+        Establish Provider Billing Source database connection.
 
         Args:
-            auth_id      (String) the provider authentication unique database id
-            schema       (String) database schema (i.e. public or customer tenant value)
+            billing_source_id  (String) the billing source unique database id
+            schema             (String) database schema (i.e. public or customer tenant value)
         """
         super().__init__(schema)
-        self._auth_id = auth_id
-        self._provider_auth = self.get_base().classes.api_providerauthentication
+        self._billing_source_id = billing_source_id
+        self._billing_source = self.get_base().classes.api_providerbillingsource
 
     def _get_db_obj_query(self):
         """
-        Return the sqlachemy query for the provider auth object.
+        Return the sqlachemy query for the provider billing source object.
 
         Args:
             None
         Returns:
             (sqlalchemy.orm.query.Query): "SELECT public.api_customer.group_ptr_id ..."
         """
-        obj = self.get_session().query(self._provider_auth).filter_by(id=self._auth_id)
+        obj = self.get_session().query(self._billing_source).filter_by(id=self._billing_source_id)
         return obj
 
     def get_uuid(self):
         """
-        Return the provider uuid.
+        Return the billing source uuid.
 
         Args:
             None
@@ -60,15 +60,15 @@ class ProviderAuthDB(KokuDB):
         obj = self._get_db_obj_query().first()
         return obj.uuid
 
-    def get_provider_resource_name(self):
+    def get_bucket(self):
         """
-        Return the provider resource name.
+        Return the cost usage report source name.
 
         Args:
             None
         Returns:
-            (String): "Provider Resource Name.  i.e. AWS: RoleARN",
-                    example: "arn:aws:iam::111111111111:role/CostManagement"
+            (String): "Identifier for cost usage report.  i.e. AWS: S3 Bucket",
+                    example: "my-s3-cur-bucket"
         """
         obj = self._get_db_obj_query().first()
-        return obj.provider_resource_name
+        return obj.bucket

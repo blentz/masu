@@ -22,8 +22,8 @@ from decimal import Decimal
 import psycopg2
 
 from masu.config import Config
-from masu.database import AWS_CUR_TABLE_MAP
-from masu.database.koku import KokuDB
+from masu.providers.database import AWS_CUR_TABLE_MAP
+from .koku import KokuDB
 
 LOG = logging.getLogger(__name__)
 

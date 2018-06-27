@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""AWS STS functions."""
+"""AWS utility functions."""
 
 import boto3
 from dateutil.relativedelta import relativedelta
@@ -65,25 +65,7 @@ def month_date_range(for_date_time):
                           end_month.strftime(timeformat))
 
 
-def establish_aws_session(role_arn, session_name='MasuSession'):
-    """
-    Establish an AWS connection session.
-
-    Args:
-        role_arn     (String) RoleARN for AWS session
-        session_name (String) Name of the session
-
-    Returns:
-        (Session): AWS Session handle
-
-    """
-    session = get_assume_role_session(
-        arn=role_arn,
-        session=session_name)
-    return session
-
-
-def get_cur_report_definitions(role_arn, session=None):
+def get_report_definitions(role_arn, session=None):
     """
     Get Cost Usage Reports associated with a given RoleARN.
 
@@ -95,14 +77,14 @@ def get_cur_report_definitions(role_arn, session=None):
 
     """
     if not session:
-        session = establish_aws_session(role_arn)
+        session = get_assume_role_session(role_arn)
     cur_client = session.client('cur')
     defs = cur_client.describe_report_definitions()
     report_defs = defs.get('ReportDefinitions', [])
     return report_defs
 
 
-def get_cur_report_names_in_bucket(role_arn, s3_bucket, session=None):
+def get_reports(role_arn, s3_bucket, session=None):
     """
     Get Cost Usage Reports associated with a given RoleARN.
 
@@ -113,7 +95,7 @@ def get_cur_report_names_in_bucket(role_arn, s3_bucket, session=None):
         ([String]): List of Cost Usage Report Names
 
     """
-    report_defs = get_cur_report_definitions(role_arn, session)
+    report_defs = get_report_definitions(role_arn, session)
     report_names = []
     for report in report_defs:
         if s3_bucket == report['S3Bucket']:

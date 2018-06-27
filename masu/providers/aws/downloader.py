@@ -23,23 +23,20 @@ from datetime import datetime
 
 import boto3
 
-import masu.external.downloader.aws.aws_utils as utils
 from masu.config import Config
-from masu.database.report_stats import ReportStatsDB
-from masu.external.downloader.downloader_interface import DownloaderInterface
-from masu.external.downloader.report_downloader_base import ReportDownloaderBase
+from masu.exceptions import MasuProviderError
+from masu.providers.common.downloader import ReportDownloaderInterface
+from masu.providers.database.accessors import ReportStatsDB
+from .utils import (get_assume_role_session,
+                    get_report_definitions,
+                    get_reports,
+                    month_date_range)
 
 DATA_DIR = Config.TMP_DIR
 LOG = logging.getLogger(__name__)
 
 
-class AWSReportDownloaderError(Exception):
-    """AWS Report Downloader error."""
-
-    pass
-
-
-class AWSReportDownloader(ReportDownloaderBase, DownloaderInterface):
+class AWSReportDownloader(ReportDownloaderInterface):
     """
     AWS Cost and Usage Report Downloader.
 
@@ -63,22 +60,22 @@ class AWSReportDownloader(ReportDownloaderBase, DownloaderInterface):
         self.customer_name = customer_name.replace(' ', '_')
 
         LOG.debug('Connecting to AWS...')
-        session = utils.establish_aws_session(auth_credential, 'MasuDownloaderSession')
+        session = get_assume_role_session(auth_credential, 'MasuDownloaderSession')
         self.cur = session.client('cur')
 
         if not report_name:
-            available_reports = utils.get_cur_report_names_in_bucket(auth_credential, cur_source)
+            available_reports = get_reports(auth_credential, cur_source)
             # Get the first report in the bucket until Koku can specify which CUR the user wants
             if available_reports:
                 report_name = available_reports[0]
         self.report_name = report_name
 
-        report_defs = utils.get_cur_report_definitions(auth_credential, session)
+        report_defs = get_report_definitions(auth_credential, session)
         report = [rep for rep in report_defs
                   if rep['ReportName'] == self.report_name]
 
         if not report:
-            raise AWSReportDownloaderError('Cost and Usage Report definition not found.')
+            raise MasuProviderError('Cost and Usage Report definition not found.')
 
         self.report = report.pop() if report else None
         self.bucket = cur_source
@@ -119,7 +116,7 @@ class AWSReportDownloader(ReportDownloaderBase, DownloaderInterface):
                     example: "/my-prefix/my-report/19701101-19701201"
 
         """
-        report_date_range = utils.month_date_range(date_time)
+        report_date_range = month_date_range(date_time)
         return '{}/{}/{}'.format(self.report.get('S3Prefix'),
                                  self.report_name,
                                  report_date_range)
