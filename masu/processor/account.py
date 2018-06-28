@@ -56,6 +56,6 @@ class Account():
                        'billing_source': billing_source,
                        'customer': customer_name,
                        'provider': provider_type,
-                       'schema': schema_name}
+                       'schema_name': schema_name}
             accounts.append(account)
         return accounts

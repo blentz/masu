@@ -45,7 +45,8 @@ def get_assume_role_session(arn, session='MasuSession'):
     return boto3.Session(
         aws_access_key_id=response['Credentials']['AccessKeyId'],
         aws_secret_access_key=response['Credentials']['SecretAccessKey'],
-        aws_session_token=response['Credentials']['SessionToken'])
+        aws_session_token=response['Credentials']['SessionToken'],
+        region_name='us-east-1')
 
 
 def month_date_range(for_date_time):

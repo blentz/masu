@@ -16,18 +16,21 @@
 #
 """Downloading asynchronous tasks."""
 
-import logging
+from celery import shared_task
+from celery.utils.log import get_task_logger
 
 from masu.exceptions import MasuProcessingError, MasuProviderError
 from masu.processor.downloader import ReportDownloader
+from masu.processor.tasks.process import process_report_file
 
-LOG = logging.getLogger(__name__)
+LOG = get_task_logger(__name__)
 
-
+@shared_task(name='processor.tasks.download', queue_name='download')
 def get_report_files(customer_name,
                      access_credential,
                      report_source,
                      provider_type,
+                     schema_name=None,
                      report_name=None):
     """
     Task to download a Cost Usage Report.
@@ -68,4 +71,10 @@ def get_report_files(customer_name,
         return []
 
     reports = downloader.get_current_report()
-    return reports
+
+    # initiate chained async task
+    for report_dict in reports:
+        cur_request = {'schema_name': schema_name,
+                       'report_path': report_dict.get('file'),
+                       'compression': report_dict.get('compression')}
+        process_report_file.delay(**cur_request)

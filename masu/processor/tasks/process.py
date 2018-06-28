@@ -16,20 +16,24 @@
 #
 """Processing asynchronous tasks."""
 
-import logging
+from celery import shared_task
+from celery.utils.log import get_task_logger
 
 from masu.processor.report_processor import ReportProcessor
 from masu.providers.database.accessors import ReportStatsDB
 
-LOG = logging.getLogger(__name__)
+LOG = get_task_logger(__name__)
 
 
-def process_report_file(process_request):
+@shared_task(name='processor.tasks.process', queue_name='process')
+def process_report_file(schema_name, report_path, compression):
     """
     Task to process a Cost Usage Report.
 
     Args:
-        process_request (dict): Attributes for report processing.
+        schema_name (String) db schema name
+        report_path (String) path to downloaded reports
+        compression (String) 'PLAIN' or 'GZIP'
 
     Returns:
         None
@@ -44,7 +48,7 @@ def process_report_file(process_request):
                                 compression)
     LOG.info(log_statement)
 
-    file_name = process_request['report_path'].split('/')[-1]
+    file_name = report_path.split('/')[-1]
     stats_recorder = ReportStatsDB(file_name)
     cursor_position = stats_recorder.get_cursor_position()
 

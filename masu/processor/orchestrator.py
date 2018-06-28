@@ -18,8 +18,8 @@
 
 import logging
 
-import masu.processor.tasks.download as download_task
-import masu.processor.tasks.process as process_task
+from masu.processor.tasks.download import get_report_files
+from masu.processor.tasks.process import process_report_file
 from masu.processor.account import Account
 
 LOG = logging.getLogger(__name__)
@@ -44,7 +44,6 @@ class Orchestrator():
             None
         """
         self._accounts = Account().all()
-        self._processing_requests = []
 
     def prepare(self):
         """
@@ -63,34 +62,14 @@ class Orchestrator():
             source = account.get('billing_source')
             customer_name = account.get('customer')
             provider = account.get('provider')
+            schema_name = account.get('schema_name')
 
             stmt = 'Download task queued for {}'.format(customer_name)
             LOG.info(stmt)
 
-            reports = download_task.get_report_files(customer_name=customer_name,
-                                                     access_credential=credentials,
-                                                     report_source=source,
-                                                     provider_type=provider)
-            for report_dict in reports:
-                cur_request = {}
-                cur_request['schema_name'] = account.get('schema')
-                cur_request['report_path'] = report_dict.get('file')
-                cur_request['compression'] = report_dict.get('compression')
-                self._processing_requests.append(cur_request)
-
+            reports = get_report_files.delay(customer_name=customer_name,
+                                             access_credential=credentials,
+                                             report_source=source,
+                                             provider_type=provider,
+                                             schema_name=schema_name)
         return reports
-
-    def process(self):
-        """
-        Process downloaded reports.
-
-        Args:
-            None
-
-        Returns:
-            None.
-
-        """
-        for request in self._processing_requests:
-            LOG.info(str(request))
-            process_task.process_report_file(request)

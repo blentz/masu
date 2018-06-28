@@ -35,12 +35,4 @@ class DownloadView(View):
         """Packages response for class-based view."""
         orchestrator = Orchestrator()
         files = orchestrator.prepare()
-        orchestrator.process()
-
-        downloaded_results_msg = 'Files downloaded and processed: {}'.format(str(files))
-        logger.info(downloaded_results_msg)
-
-        response = {
-            'files': files,
-        }
-        return jsonify(response)
+        return jsonify({'message': 'Report processing queued.'})
