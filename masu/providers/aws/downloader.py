@@ -170,9 +170,10 @@ class AWSReportDownloader(ReportDownloaderInterface):
         s3_file = self.s3_client.get_object(Bucket=self.report.get('S3Bucket'), Key=key)
         s3_etag = s3_file.get('ETag')
 
-        LOG.info("Comparing ETags: %s == %s", s3_etag, stored_etag)
-        LOG.info("Does %s exist? %s", file_name, os.path.isfile(file_name))
-        if not os.path.isfile(file_name) and s3_etag != stored_etag:
+        if not os.path.isfile(file_name):
+            LOG.info('Downloading %s to %s', s3_filename, file_name)
+            self.s3_client.download_file(self.report.get('S3Bucket'), key, file_name)
+        elif s3_etag != stored_etag:
             LOG.info('Downloading %s to %s', s3_filename, file_name)
             self.s3_client.download_file(self.report.get('S3Bucket'), key, file_name)
         return file_name, s3_etag
