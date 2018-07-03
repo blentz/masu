@@ -34,5 +34,5 @@ class DownloadView(View):
     def dispatch_request(self):
         """Packages response for class-based view."""
         orchestrator = Orchestrator()
-        files = orchestrator.prepare()
+        orchestrator.prepare()
         return jsonify({'message': 'Report processing queued.'})

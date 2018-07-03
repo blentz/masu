@@ -16,6 +16,10 @@
 #
 """Processing asynchronous tasks."""
 
+# pylint: disable=too-many-arguments
+# disabled module-wide due to current state of task signature.
+# we expect this situation to be temporary as we iterate on these details.
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -27,6 +31,11 @@ LOG = get_task_logger(__name__)
 
 @shared_task(name='processor.tasks.process', queue_name='process')
 def process_report_file(schema_name, report_path, compression):
+    """Shared celery task to process report files asynchronously."""
+    _process_report_file(schema_name, report_path, compression)
+
+
+def _process_report_file(schema_name, report_path, compression):
     """
     Task to process a Cost Usage Report.
 

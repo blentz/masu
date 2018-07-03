@@ -16,6 +16,10 @@
 #
 """Downloading asynchronous tasks."""
 
+# pylint: disable=too-many-arguments, too-many-function-args
+# disabled module-wide due to current state of task signature.
+# we expect this situation to be temporary as we iterate on these details.
+
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -25,6 +29,7 @@ from masu.processor.tasks.process import process_report_file
 
 LOG = get_task_logger(__name__)
 
+
 @shared_task(name='processor.tasks.download', queue_name='download')
 def get_report_files(customer_name,
                      access_credential,
@@ -32,6 +37,27 @@ def get_report_files(customer_name,
                      provider_type,
                      schema_name=None,
                      report_name=None):
+    """Shared celery task to download reports asynchronously."""
+    reports = _get_report_files(customer_name,
+                                access_credential,
+                                report_source,
+                                provider_type,
+                                schema_name,
+                                report_name)
+
+    # initiate chained async task
+    for report_dict in reports:
+        cur_request = {'schema_name': schema_name,
+                       'report_path': report_dict.get('file'),
+                       'compression': report_dict.get('compression')}
+        process_report_file.delay(**cur_request)
+
+
+def _get_report_files(customer_name,
+                      access_credential,
+                      report_source,
+                      provider_type,
+                      report_name=None):
     """
     Task to download a Cost Usage Report.
 
@@ -66,15 +92,7 @@ def get_report_files(customer_name,
                                       report_source=report_source,
                                       provider_type=provider_type,
                                       report_name=report_name)
+        return downloader.get_current_report()
     except (MasuProcessingError, MasuProviderError) as err:
         LOG.error(str(err))
         return []
-
-    reports = downloader.get_current_report()
-
-    # initiate chained async task
-    for report_dict in reports:
-        cur_request = {'schema_name': schema_name,
-                       'report_path': report_dict.get('file'),
-                       'compression': report_dict.get('compression')}
-        process_report_file.delay(**cur_request)

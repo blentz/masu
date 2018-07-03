@@ -37,4 +37,4 @@ class DownloadAPIViewTest(MasuTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers['Content-Type'], 'application/json')
 
-        self.assertIn('files', body)
+        self.assertIn('message', body)

@@ -17,7 +17,12 @@
 
 """Test the Orchestrator object."""
 
+import random
+
+import faker
 from unittest.mock import patch
+
+from celery.result import AsyncResult
 
 from masu.config import Config
 from masu.exceptions import MasuProviderError
@@ -26,9 +31,18 @@ from masu.processor.orchestrator import Orchestrator
 from tests import MasuTestCase
 
 class FakeDownloader():
-    def download_current_report():
-        return [{'file': '/var/tmp/masu/region/aws/catch-clearly.csv', 'compression': 'GZIP'},
-                {'file': '/var/tmp/masu/base/aws/professor-hour-industry-television.csv', 'compression': 'GZIP'}]
+    fake = faker.Faker()
+
+    def download_current_report(self):
+        path = '/var/tmp/masu'
+        fake_files = []
+        for _ in range(1,random.randint(5,50)):
+            fake_files.append({'file': '{}/{}/aws/{}-{}.csv'.format(path,
+                                                                    self.fake.word(),
+                                                                    self.fake.word(),
+                                                                    self.fake.word()),
+                               'compression': random.choice(['GZIP', 'PLAIN'])})
+        return fake_files
 
 
 class OrchestratorTest(MasuTestCase):
@@ -52,7 +66,7 @@ class OrchestratorTest(MasuTestCase):
         """Test downloading cost usage reports."""
         orchestrator = Orchestrator()
         reports = orchestrator.prepare()
-        self.assertEqual(len(reports), 2)
+        self.assertIsInstance(reports, AsyncResult)
 
     @patch('masu.processor.downloader.ReportDownloader._set_downloader', return_value=FakeDownloader)
     @patch('masu.processor.account.Account.all', return_value=[])
@@ -60,25 +74,7 @@ class OrchestratorTest(MasuTestCase):
         """Test downloading cost usage reports."""
         orchestrator = Orchestrator()
         reports = orchestrator.prepare()
-        self.assertEqual(len(reports), 0)
-
-    @patch('masu.processor.tasks.process.process_report_file', return_value=None)
-    def test_process(self, mock_task):
-        """Test downloading cost usage reports."""
-        requests = [{'report_path' : '/test/path/file.csv'},
-                    {'report_path' : '/test/path/file2.csv'}]
-        orchestrator = Orchestrator()
-        orchestrator._processing_requests = requests
-        orchestrator.process()
-        # FIXME: missing assertion
-
-    @patch('masu.processor.tasks.process.process_report_file', return_value=None)
-    @patch('masu.processor.account.Account.all', return_value=[])
-    def test_process_not_accounts(self, mock_task, mock_accounts_accessor):
-        """Test downloading cost usage reports with no pending requests."""
-        orchestrator = Orchestrator()
-        orchestrator.process()
-        # FIXME: missing assertion
+        self.assertEqual(reports, [])
 
     @patch('masu.processor.downloader.ReportDownloader._set_downloader',
            side_effect=MasuProviderError)
@@ -86,4 +82,4 @@ class OrchestratorTest(MasuTestCase):
         """Test downloading cost usage reports."""
         orchestrator = Orchestrator()
         reports = orchestrator.prepare()
-        self.assertEqual(len(reports), 0)
+        self.assertIsInstance(reports, AsyncResult)

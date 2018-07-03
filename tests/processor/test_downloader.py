@@ -25,9 +25,6 @@ from masu.providers.aws.downloader import AWSReportDownloader
 from masu.processor.downloader import ReportDownloader
 from tests import MasuTestCase
 
-class FakeDownloader():
-    pass
-
 
 class ReportDownloaderTest(MasuTestCase):
     """Test Cases for the ReportDownloader object."""

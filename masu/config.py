@@ -20,6 +20,7 @@
 import datetime
 import os
 
+
 # pylint: disable=too-few-public-methods
 class Config(object):
     """Configuration for app."""
@@ -61,8 +62,9 @@ class Config(object):
 
     # Celery settings
     CELERY_BROKER_URL = f'amqp://{RABBITMQ_HOST}:{RABBITMQ_PORT}'
-    #CELERY_RESULT_BACKEND = f'amqp://{RABBITMQ_HOST}:{RABBITMQ_PORT}'
-    #CELERY_RESULT_BACKEND = f'db+postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    # CELERY_RESULT_BACKEND = f'amqp://{RABBITMQ_HOST}:{RABBITMQ_PORT}'
+    # pylint: disable=line-too-long
+    # CELERY_RESULT_BACKEND = f'db+postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
     REPORT_PROCESSING_BATCH_SIZE = 10000
 
@@ -78,4 +80,4 @@ class Config(object):
 
     # The interval for scanning for new reports.
     # This needs to be a timedelta object.
-    REPORT_CHECK_INTERVAL=datetime.timedelta(minutes=5)
+    REPORT_CHECK_INTERVAL = datetime.timedelta(minutes=5)

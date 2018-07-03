@@ -18,9 +18,8 @@
 
 import logging
 
-from masu.processor.tasks.download import get_report_files
-from masu.processor.tasks.process import process_report_file
 from masu.processor.account import Account
+from masu.processor.tasks.download import get_report_files
 
 LOG = logging.getLogger(__name__)
 

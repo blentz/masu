@@ -23,15 +23,14 @@ from celery.task import periodic_task
 from celery.utils.log import get_task_logger
 
 from masu.config import Config
-from masu.processor.tasks.download import get_report_files
-from masu.processor.tasks.process import process_report_file
 from masu.processor.orchestrator import Orchestrator
-from masu.exceptions import MasuProcessingError, MasuProviderError
 
 LOG = get_task_logger(__name__)
+
 
 # TODO: Get periodic test to work
 @periodic_task(run_every=Config.REPORT_CHECK_INTERVAL)
 def check_report_updates():
+    """Scheduled task to initiate scanning process on a regular interval."""
     orchestrator = Orchestrator()
     orchestrator.prepare()

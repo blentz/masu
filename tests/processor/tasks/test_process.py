@@ -19,7 +19,7 @@
 
 from unittest.mock import patch
 
-from masu.processor.tasks.process import process_report_file
+from masu.processor.tasks.process import _process_report_file
 
 from tests import MasuTestCase
 
@@ -34,4 +34,4 @@ class ProcessReportFileTests(MasuTestCase):
         request = {'report_path': '/test/path/file1.csv',
                    'compression': 'gzip',
                    'schema_name': 'testcustomer'}
-        process_report_file(request)
+        _process_report_file(**request)

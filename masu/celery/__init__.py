@@ -23,13 +23,12 @@ def create_celery(app):
     """Create Celery app object using the Flask app's settings."""
     celery = Celery(
         app.import_name,
-        #backend=app.config.get('CELERY_RESULT_BACKEND'),
+        # backend=app.config.get('CELERY_RESULT_BACKEND'),
         broker=app.config.get('CELERY_BROKER_URL')
     )
     celery.conf.update(app.config)
 
     # Define queues used for report processing
-    # TODO: Actually get tasks to use their respective queues
     celery.conf.task_routes = {
         'processor.tasks.get_report_files': {'queue': 'download'},
         'processor.tasks.process_report_file': {'queue': 'process'}
